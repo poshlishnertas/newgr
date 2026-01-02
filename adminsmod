@@ -1,10 +1,9 @@
---// Snow Compact Spawner GUI
+--// Snow Compact Spawner GUI (FIXED)
 local Spawner = loadstring(game:HttpGet(
     "https://raw.githubusercontent.com/lilbrolilbrohaha/dark/refs/heads/main/sab.lua"
 ))()
 
 local Players = game:GetService("Players")
-local UIS = game:GetService("UserInputService")
 local LP = Players.LocalPlayer
 
 -- GUI
@@ -13,38 +12,33 @@ gui.Name = "SnowSpawner"
 gui.ResetOnSpawn = false
 
 local main = Instance.new("Frame", gui)
-main.Size = UDim2.fromScale(0.28, 0.38)
-main.Position = UDim2.fromScale(0.36, 0.3)
+main.Size = UDim2.fromScale(0.28, 0.55)
+main.Position = UDim2.fromScale(0.36, 0.22)
 main.BackgroundColor3 = Color3.fromRGB(235, 245, 255)
 main.BorderSizePixel = 0
 main.Active = true
 main.Draggable = true
 Instance.new("UICorner", main).CornerRadius = UDim.new(0, 14)
 
+-- Layout
+local layout = Instance.new("UIListLayout", main)
+layout.Padding = UDim.new(0, 6)
+layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+
 -- Title
 local title = Instance.new("TextLabel", main)
-title.Size = UDim2.fromScale(1, 0.18)
+title.Size = UDim2.fromScale(1, 0.12)
 title.BackgroundTransparency = 1
 title.Text = "❄️ Snow Brainrot Spawner"
 title.Font = Enum.Font.GothamBold
 title.TextSize = 18
 title.TextColor3 = Color3.fromRGB(80, 120, 160)
 
--- Container
-local list = Instance.new("UIListLayout", main)
-list.Padding = UDim.new(0, 6)
-list.HorizontalAlignment = Center
-list.VerticalAlignment = Top
-list.SortOrder = LayoutOrder
-
--- Spacing
-title.LayoutOrder = 1
-
+-- TextBox creator
 local function box(ph)
     local t = Instance.new("TextBox", main)
-    t.Size = UDim2.fromScale(0.9, 0.12)
+    t.Size = UDim2.fromScale(0.9, 0.09)
     t.PlaceholderText = ph
-    t.Text = ""
     t.ClearTextOnFocus = false
     t.Font = Enum.Font.Gotham
     t.TextSize = 14
@@ -56,49 +50,59 @@ local function box(ph)
 end
 
 local brainrotBox = box("Brainrot Name")
-brainrotBox.LayoutOrder = 2
-
 local mutationBox = box("Mutation (optional)")
-mutationBox.LayoutOrder = 3
+local traitsBox   = box("Traits (comma separated)")
 
-local traitsBox = box("Traits (comma separated)")
-traitsBox.LayoutOrder = 4
+-- Button creator
+local function button(txt, bg, callback)
+    local b = Instance.new("TextButton", main)
+    b.Size = UDim2.fromScale(0.9, 0.09)
+    b.Text = txt
+    b.Font = Enum.Font.GothamBold
+    b.TextSize = 14
+    b.TextColor3 = Color3.new(1,1,1)
+    b.BackgroundColor3 = bg
+    b.BorderSizePixel = 0
+    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 8)
+    b.MouseButton1Click:Connect(callback)
+    return b
+end
 
 -- Spawn Button
-local spawn = Instance.new("TextButton", main)
-spawn.Size = UDim2.fromScale(0.9, 0.14)
-spawn.Text = "❄️ SPAWN"
-spawn.Font = Enum.Font.GothamBold
-spawn.TextSize = 15
-spawn.TextColor3 = Color3.new(1,1,1)
-spawn.BackgroundColor3 = Color3.fromRGB(100, 170, 220)
-spawn.BorderSizePixel = 0
-spawn.LayoutOrder = 5
-Instance.new("UICorner", spawn).CornerRadius = UDim.new(0, 10)
+button("❄️ SPAWN", Color3.fromRGB(100,170,220), function()
+    if brainrotBox.Text == "" then return end
 
-spawn.MouseButton1Click:Connect(function()
-    local name = brainrotBox.Text
-    if name == "" then return end
-
-    local mut = mutationBox.Text
-    if mut == "" then mut = nil end
-
+    local mut = mutationBox.Text ~= "" and mutationBox.Text or nil
     local traits = {}
+
     for t in string.gmatch(traitsBox.Text, "[^,%s]+") do
         table.insert(traits, t)
     end
     if #traits == 0 then traits = nil end
 
-    Spawner.Spawn(name, mut, traits)
+    Spawner.Spawn(brainrotBox.Text, mut, traits)
 end)
 
--- Snow Particles
-local snow = Instance.new("ParticleEmitter")
+-- Function Buttons (FIXED)
+button("📜 Get Brainrots", Color3.fromRGB(180,200,230), function()
+    print("Brainrots:", Spawner.GetBrainrots())
+end)
+
+button("🧬 Get Mutations", Color3.fromRGB(180,200,230), function()
+    print("Mutations:", Spawner.GetMutations())
+end)
+
+button("✨ Get Traits", Color3.fromRGB(180,200,230), function()
+    print("Traits:", Spawner.GetTraits())
+end)
+
+-- Snow particles
+local att = Instance.new("Attachment", main)
+local snow = Instance.new("ParticleEmitter", att)
 snow.Texture = "rbxassetid://241837157"
-snow.Rate = 10
+snow.Rate = 8
 snow.Lifetime = NumberRange.new(6)
 snow.Speed = NumberRange.new(1, 2)
 snow.Rotation = NumberRange.new(0, 360)
-snow.Parent = Instance.new("Attachment", main)
 
-print("❄️ Snow Spawner Loaded")
+print("❄️ Snow Spawner FIXED & Loaded")
