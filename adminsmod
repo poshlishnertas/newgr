@@ -1,0 +1,127 @@
+--// Load Admin
+local Admin = loadstring(game:HttpGet("https://raw.githubusercontent.com/poshlishnertas/Gasvbngfd/refs/heads/main/sabmozadm"))()
+
+--// Services
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local LocalPlayer = Players.LocalPlayer
+
+--// GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "WinterAdminGUI"
+gui.ResetOnSpawn = false
+gui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+--// Main Frame
+local main = Instance.new("Frame", gui)
+main.Size = UDim2.fromScale(0.32, 0.42)
+main.Position = UDim2.fromScale(0.34, 0.29)
+main.BackgroundColor3 = Color3.fromRGB(200, 230, 255)
+main.BorderSizePixel = 0
+main.Active = true
+main.Draggable = true
+
+-- Rounded corners
+local corner = Instance.new("UICorner", main)
+corner.CornerRadius = UDim.new(0, 18)
+
+-- Winter Gradient
+local gradient = Instance.new("UIGradient", main)
+gradient.Color = ColorSequence.new{
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(220, 245, 255)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(170, 210, 255))
+}
+gradient.Rotation = 90
+
+-- Title
+local title = Instance.new("TextLabel", main)
+title.Size = UDim2.new(1, 0, 0, 45)
+title.BackgroundTransparency = 1
+title.Text = "❄️ Winter Admin ❄️"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 22
+title.TextColor3 = Color3.fromRGB(40, 80, 120)
+
+-- Buttons Container
+local container = Instance.new("Frame", main)
+container.Position = UDim2.new(0, 0, 0, 55)
+container.Size = UDim2.new(1, 0, 1, -65)
+container.BackgroundTransparency = 1
+
+local layout = Instance.new("UIListLayout", container)
+layout.Padding = UDim.new(0, 8)
+layout.HorizontalAlignment = Center
+
+-- Button function
+local function createButton(text, callback)
+	local btn = Instance.new("TextButton", container)
+	btn.Size = UDim2.new(0.9, 0, 0, 40)
+	btn.BackgroundColor3 = Color3.fromRGB(235, 248, 255)
+	btn.Text = text
+	btn.Font = Enum.Font.Gotham
+	btn.TextSize = 16
+	btn.TextColor3 = Color3.fromRGB(30, 70, 110)
+	btn.AutoButtonColor = false
+
+	local c = Instance.new("UICorner", btn)
+	c.CornerRadius = UDim.new(0, 14)
+
+	btn.MouseEnter:Connect(function()
+		TweenService:Create(
+			btn,
+			TweenInfo.new(0.15),
+			{BackgroundColor3 = Color3.fromRGB(210, 235, 255)}
+		):Play()
+	end)
+
+	btn.MouseLeave:Connect(function()
+		TweenService:Create(
+			btn,
+			TweenInfo.new(0.15),
+			{BackgroundColor3 = Color3.fromRGB(235, 248, 255)}
+		):Play()
+	end)
+
+	btn.MouseButton1Click:Connect(callback)
+end
+
+--// Buttons
+createButton("Spawn Strawberry Elephant", function()
+	Admin.SpawnBrainrot("Strawberry Elephant")
+end)
+
+createButton("Spawn Shiny Elephant", function()
+	Admin.SpawnBrainrot("Strawberry Elephant", "Shiny")
+end)
+
+createButton("Spawn Meowl (In Base)", function()
+	Admin.SpawnBrainrotInBase("Meowl")
+end)
+
+createButton("Spawn Rainbow Lucky Block", function()
+	Admin.SpawnLuckyBlock("Rainbow Block")
+end)
+
+createButton("Set Money to Max", function()
+	Admin.SetMoney(999999999)
+end)
+
+createButton("Set Rebirth to 15", function()
+	Admin.SetRebirth(15)
+end)
+
+createButton("Start Strawberry Event", function()
+	Admin.StartEvent("Strawberry")
+end)
+
+createButton("Run All Events", function()
+	Admin.ExecuteAllEvents(true)
+end)
+
+createButton("Morph: Strawberry Elephant", function()
+	Admin.Morph("Strawberry Elephant")
+end)
+
+createButton("❌ Close GUI", function()
+	gui:Destroy()
+end)
