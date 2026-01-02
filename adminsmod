@@ -1,4 +1,4 @@
---// Snow Compact Spawner GUI (FIXED)
+--// Snow Compact Spawner GUI (ORDER FIXED)
 local Spawner = loadstring(game:HttpGet(
     "https://raw.githubusercontent.com/lilbrolilbrohaha/dark/refs/heads/main/sab.lua"
 ))()
@@ -12,8 +12,8 @@ gui.Name = "SnowSpawner"
 gui.ResetOnSpawn = false
 
 local main = Instance.new("Frame", gui)
-main.Size = UDim2.fromScale(0.28, 0.55)
-main.Position = UDim2.fromScale(0.36, 0.22)
+main.Size = UDim2.fromScale(0.28, 0.42)
+main.Position = UDim2.fromScale(0.36, 0.28)
 main.BackgroundColor3 = Color3.fromRGB(235, 245, 255)
 main.BorderSizePixel = 0
 main.Active = true
@@ -22,12 +22,14 @@ Instance.new("UICorner", main).CornerRadius = UDim.new(0, 14)
 
 -- Layout
 local layout = Instance.new("UIListLayout", main)
-layout.Padding = UDim.new(0, 6)
+layout.Padding = UDim.new(0, 8)
 layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+layout.VerticalAlignment = Enum.VerticalAlignment.Top
 
--- Title
+-- Title (TOP)
 local title = Instance.new("TextLabel", main)
-title.Size = UDim2.fromScale(1, 0.12)
+title.LayoutOrder = 1
+title.Size = UDim2.fromScale(1, 0.2)
 title.BackgroundTransparency = 1
 title.Text = "❄️ Snow Brainrot Spawner"
 title.Font = Enum.Font.GothamBold
@@ -35,9 +37,10 @@ title.TextSize = 18
 title.TextColor3 = Color3.fromRGB(80, 120, 160)
 
 -- TextBox creator
-local function box(ph)
+local function box(ph, order)
     local t = Instance.new("TextBox", main)
-    t.Size = UDim2.fromScale(0.9, 0.09)
+    t.LayoutOrder = order
+    t.Size = UDim2.fromScale(0.9, 0.12)
     t.PlaceholderText = ph
     t.ClearTextOnFocus = false
     t.Font = Enum.Font.Gotham
@@ -49,27 +52,24 @@ local function box(ph)
     return t
 end
 
-local brainrotBox = box("Brainrot Name")
-local mutationBox = box("Mutation (optional)")
-local traitsBox   = box("Traits (comma separated)")
+-- Inputs (ORDERED)
+local brainrotBox = box("Brainrot Name", 2)
+local mutationBox = box("Mutation (optional)", 3)
+local traitsBox   = box("Traits (comma separated)", 4)
 
--- Button creator
-local function button(txt, bg, callback)
-    local b = Instance.new("TextButton", main)
-    b.Size = UDim2.fromScale(0.9, 0.09)
-    b.Text = txt
-    b.Font = Enum.Font.GothamBold
-    b.TextSize = 14
-    b.TextColor3 = Color3.new(1,1,1)
-    b.BackgroundColor3 = bg
-    b.BorderSizePixel = 0
-    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 8)
-    b.MouseButton1Click:Connect(callback)
-    return b
-end
+-- Spawn Button (LAST)
+local spawn = Instance.new("TextButton", main)
+spawn.LayoutOrder = 5
+spawn.Size = UDim2.fromScale(0.9, 0.14)
+spawn.Text = "❄️ SPAWN"
+spawn.Font = Enum.Font.GothamBold
+spawn.TextSize = 15
+spawn.TextColor3 = Color3.new(1,1,1)
+spawn.BackgroundColor3 = Color3.fromRGB(100,170,220)
+spawn.BorderSizePixel = 0
+Instance.new("UICorner", spawn).CornerRadius = UDim.new(0, 10)
 
--- Spawn Button
-button("❄️ SPAWN", Color3.fromRGB(100,170,220), function()
+spawn.MouseButton1Click:Connect(function()
     if brainrotBox.Text == "" then return end
 
     local mut = mutationBox.Text ~= "" and mutationBox.Text or nil
@@ -83,19 +83,6 @@ button("❄️ SPAWN", Color3.fromRGB(100,170,220), function()
     Spawner.Spawn(brainrotBox.Text, mut, traits)
 end)
 
--- Function Buttons (FIXED)
-button("📜 Get Brainrots", Color3.fromRGB(180,200,230), function()
-    print("Brainrots:", Spawner.GetBrainrots())
-end)
-
-button("🧬 Get Mutations", Color3.fromRGB(180,200,230), function()
-    print("Mutations:", Spawner.GetMutations())
-end)
-
-button("✨ Get Traits", Color3.fromRGB(180,200,230), function()
-    print("Traits:", Spawner.GetTraits())
-end)
-
 -- Snow particles
 local att = Instance.new("Attachment", main)
 local snow = Instance.new("ParticleEmitter", att)
@@ -105,4 +92,4 @@ snow.Lifetime = NumberRange.new(6)
 snow.Speed = NumberRange.new(1, 2)
 snow.Rotation = NumberRange.new(0, 360)
 
-print("❄️ Snow Spawner FIXED & Loaded")
+print("❄️ Snow Spawner Loaded (Order Fixed)")
