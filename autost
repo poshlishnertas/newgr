@@ -1,0 +1,124 @@
+local function createUI()
+	local guiParent = game:GetService("CoreGui")
+	pcall(function()
+		if gethui then
+			local h = gethui()
+			if h then guiParent = h end
+		end
+	end)
+
+	local old = guiParent:FindFirstChild("SAB_Utils_UI")
+	if old then old:Destroy() end
+
+	local screenGui = Instance.new("ScreenGui")
+	screenGui.Name = "SAB_Utils_UI"
+	screenGui.ResetOnSpawn = false
+	screenGui.IgnoreGuiInset = true
+	screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
+	screenGui.Parent = guiParent
+
+	local mainFrame = Instance.new("Frame")
+	mainFrame.Size = UDim2.new(0, 240, 0, 235)
+	mainFrame.Position = UDim2.new(0.68, -120, 0.55, -117)
+	mainFrame.BackgroundColor3 = Color3.fromRGB(8, 8, 12)
+	mainFrame.BorderSizePixel = 0
+	mainFrame.Parent = screenGui
+
+	Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 18)
+
+	local gradient = Instance.new("UIGradient")
+	gradient.Color = ColorSequence.new{
+		ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)),
+		ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 25, 45))
+	}
+	gradient.Rotation = 90
+	gradient.Parent = mainFrame
+
+	-- HEADER
+	local header = Instance.new("Frame")
+	header.Size = UDim2.new(1, 0, 0, 42)
+	header.BackgroundColor3 = Color3.fromRGB(5, 10, 20)
+	header.BorderSizePixel = 0
+	header.Parent = mainFrame
+	Instance.new("UICorner", header).CornerRadius = UDim.new(0, 18)
+
+	local title = Instance.new("TextLabel")
+	title.BackgroundTransparency = 1
+	title.Size = UDim2.new(1, -50, 1, 0)
+	title.Position = UDim2.new(0, 14, 0, 0)
+	title.Font = Enum.Font.GothamBlack
+	title.Text = "☠ STEAL A BRAINROT ☠"
+	title.TextSize = 14
+	title.TextColor3 = Color3.fromRGB(80, 170, 255)
+	title.TextXAlignment = Left
+	title.Parent = header
+
+	local subtitle = Instance.new("TextLabel")
+	subtitle.BackgroundTransparency = 1
+	subtitle.Size = UDim2.new(1, -50, 1, 0)
+	subtitle.Position = UDim2.new(0, 14, 0, 18)
+	subtitle.Font = Enum.Font.Gotham
+	subtitle.Text = "MozilOnTop"
+	subtitle.TextSize = 11
+	subtitle.TextColor3 = Color3.fromRGB(140, 180, 255)
+	subtitle.TextXAlignment = Left
+	subtitle.Parent = header
+
+	local closeBtn = Instance.new("TextButton")
+	closeBtn.Size = UDim2.new(0, 22, 0, 22)
+	closeBtn.Position = UDim2.new(1, -30, 0.5, -11)
+	closeBtn.BackgroundColor3 = Color3.fromRGB(20, 40, 70)
+	closeBtn.Text = "✕"
+	closeBtn.Font = Enum.Font.GothamBold
+	closeBtn.TextSize = 14
+	closeBtn.TextColor3 = Color3.fromRGB(170, 210, 255)
+	closeBtn.Parent = header
+	Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(1, 0)
+
+	closeBtn.MouseButton1Click:Connect(function()
+		screenGui:Destroy()
+	end)
+
+	-- BODY
+	local body = Instance.new("Frame")
+	body.Size = UDim2.new(1, -20, 1, -58)
+	body.Position = UDim2.new(0, 10, 0, 46)
+	body.BackgroundTransparency = 1
+	body.Parent = mainFrame
+
+	local list = Instance.new("UIListLayout")
+	list.Padding = UDim.new(0, 6)
+	list.Parent = body
+
+	local function makeButton(text)
+		local btn = Instance.new("TextButton")
+		btn.Size = UDim2.new(1, 0, 0, 36)
+		btn.BackgroundColor3 = Color3.fromRGB(10, 30, 55)
+		btn.Text = "☠  " .. text
+		btn.Font = Enum.Font.GothamBold
+		btn.TextSize = 14
+		btn.TextColor3 = Color3.fromRGB(170, 215, 255)
+		btn.Parent = body
+		Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 10)
+		return btn
+	end
+
+	local instantBtn = makeButton("INSTANT STEAL")
+	local forwardBtn = makeButton("TP FORWARD")
+	local noclipBtn = makeButton("NOCLIP: OFF")
+	local fastBtn = makeButton("FAST STEAL: OFF")
+
+	-- BUTTON FUNCTIONS (UNCHANGED)
+	instantBtn.MouseButton1Click:Connect(doInstantSteal)
+	forwardBtn.MouseButton1Click:Connect(doForwardTP)
+
+	noclipBtn.MouseButton1Click:Connect(function()
+		setNoclip(not noclipEnabled)
+		noclipBtn.Text = noclipEnabled and "☠  NOCLIP: ON" or "☠  NOCLIP: OFF"
+	end)
+
+	fastBtn.MouseButton1Click:Connect(function()
+		setFastSteal(not fastStealOn)
+		fastBtn.Text = fastStealOn and "☠  FAST STEAL: ON" or "☠  FAST STEAL: OFF"
+	end)
+end
