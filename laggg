@@ -2,6 +2,8 @@
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+
 local player = Players.LocalPlayer
 
 local lagEnabled = false
@@ -21,6 +23,12 @@ frame.BackgroundColor3 = Color3.fromRGB(30,30,30)
 frame.Parent = gui
 
 Instance.new("UICorner", frame).CornerRadius = UDim.new(0,14)
+
+-- 🔵 NEON BLUE BORDER
+local stroke = Instance.new("UIStroke")
+stroke.Thickness = 2
+stroke.Color = Color3.fromRGB(0, 170, 255) -- neon blue
+stroke.Parent = frame
 
 -- Title
 local title = Instance.new("TextLabel")
@@ -61,21 +69,47 @@ footer.Parent = frame
 -- Notification
 local notif = Instance.new("TextLabel")
 notif.Size = UDim2.fromOffset(320, 45)
-notif.Position = UDim2.new(1, -340, 1, -70)
+notif.Position = UDim2.new(1, 20, 1, -70) -- off screen
 notif.BackgroundColor3 = Color3.fromRGB(20,20,20)
 notif.TextColor3 = Color3.new(1,1,1)
 notif.Font = Enum.Font.GothamBold
 notif.TextSize = 14
-notif.Text = "LAGGER ACTIVATED! KILL EM 😈"
+notif.TextTransparency = 0
+notif.BackgroundTransparency = 0
 notif.Visible = false
 notif.Parent = gui
 
 Instance.new("UICorner", notif).CornerRadius = UDim.new(0,10)
 
--- Fake lag function (LOCAL ONLY)
+-- 🔔 Notification function (2 seconds)
+local function showNotification(text)
+	notif.Text = text
+	notif.Visible = true
+	notif.Position = UDim2.new(1, 20, 1, -70)
+
+	local inTween = TweenService:Create(
+		notif,
+		TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+		{Position = UDim2.new(1, -340, 1, -70)}
+	)
+	inTween:Play()
+
+	task.delay(2, function()
+		local outTween = TweenService:Create(
+			notif,
+			TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
+			{Position = UDim2.new(1, 20, 1, -70)}
+		)
+		outTween:Play()
+		outTween.Completed:Wait()
+		notif.Visible = false
+	end)
+end
+
+-- Fake lag (LOCAL ONLY)
 local function startLag()
 	lagConnection = RunService.RenderStepped:Connect(function()
-		task.wait(0.15) -- adjust for more/less fake lag
+		task.wait(0.15)
 	end)
 end
 
@@ -93,12 +127,12 @@ lagBtn.MouseButton1Click:Connect(function()
 	if lagEnabled then
 		lagBtn.Text = "LAGGER: ON"
 		lagBtn.BackgroundColor3 = Color3.fromRGB(200,60,60)
-		notif.Visible = true
 		startLag()
+		showNotification("LAGGER ACTIVATED! KILL EM 😈")
 	else
 		lagBtn.Text = "LAGGER: OFF"
 		lagBtn.BackgroundColor3 = Color3.fromRGB(80,80,80)
-		notif.Visible = false
 		stopLag()
+		showNotification("LAGGER DEACTIVATED!!!")
 	end
 end)
