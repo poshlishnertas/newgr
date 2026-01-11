@@ -26,3 +26,10 @@ RunService.Stepped:Connect(function()
         end
     end
 end)
+
+workspace.ChildAdded:Connect(function(v)
+    if v.Name:lower():find("present") or v.Name:lower():find("explosion") then
+        RunService.RenderStepped:Wait()
+        v:Destroy()
+    end
+end)
