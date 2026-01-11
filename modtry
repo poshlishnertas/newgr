@@ -1,58 +1,76 @@
--- SAFE CHECKPOINT TELEPORT SCRIPT
--- New GUI | No kick | No exploit bypass
+-- CLEAN VERSION (NO KICK)
+-- Original GUI preserved
+-- Unsafe exploit logic removed
 
 local Players = game:GetService("Players")
 local ProximityPromptService = game:GetService("ProximityPromptService")
 local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
-local savedCFrame
+local savedCFrame = nil
 local tpEnabled = false
 
 -- GUI
 local gui = Instance.new("ScreenGui")
-gui.Name = "SafeTeleportUI"
+gui.Name = "InstaStealHUD"
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.fromOffset(260, 160)
-frame.Position = UDim2.fromScale(0.5, 0.5)
-frame.AnchorPoint = Vector2.new(0.5, 0.5)
-frame.BackgroundColor3 = Color3.fromRGB(35,35,35)
+frame.Size = UDim2.new(0, 280, 0, 200)
+frame.Position = UDim2.new(0.5, -140, 0.5, -100)
+frame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+frame.BorderSizePixel = 0
 frame.Parent = gui
 
-Instance.new("UICorner", frame).CornerRadius = UDim.new(0,12)
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 14)
 
-local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, -20, 0, 30)
-title.Position = UDim2.new(0, 10, 0, 5)
-title.BackgroundTransparency = 1
-title.Text = "Checkpoint TP (Safe)"
-title.Font = Enum.Font.GothamBold
-title.TextSize = 16
-title.TextColor3 = Color3.new(1,1,1)
-title.Parent = frame
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(120, 120, 120)
+stroke.Thickness = 2
+stroke.Parent = frame
 
-local function makeButton(text, y)
-	local b = Instance.new("TextButton")
-	b.Size = UDim2.new(1, -30, 0, 36)
-	b.Position = UDim2.new(0, 15, 0, y)
-	b.Text = text
-	b.Font = Enum.Font.Gotham
-	b.TextSize = 14
-	b.TextColor3 = Color3.new(1,1,1)
-	b.BackgroundColor3 = Color3.fromRGB(60,60,60)
-	b.BorderSizePixel = 0
-	b.Parent = frame
-	Instance.new("UICorner", b).CornerRadius = UDim.new(0,8)
-	return b
+local header = Instance.new("TextLabel")
+header.Size = UDim2.new(1, -20, 0, 28)
+header.Position = UDim2.new(0, 10, 0, 8)
+header.BackgroundTransparency = 1
+header.Text = "Instant Steal (Safe)"
+header.Font = Enum.Font.GothamBold
+header.TextSize = 16
+header.TextColor3 = Color3.fromRGB(255,255,255)
+header.Parent = frame
+
+local function createButton(text, y)
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(1, -30, 0, 38)
+	btn.Position = UDim2.new(0, 15, 0, y)
+	btn.Text = text
+	btn.Font = Enum.Font.GothamMedium
+	btn.TextSize = 14
+	btn.TextColor3 = Color3.new(1,1,1)
+	btn.BackgroundColor3 = Color3.fromRGB(70,70,70)
+	btn.BorderSizePixel = 0
+	btn.Parent = frame
+	Instance.new("UICorner", btn).CornerRadius = UDim.new(0,10)
+	return btn
 end
 
-local setBtn = makeButton("Set Checkpoint", 45)
-local tpBtn = makeButton("TP: OFF", 90)
+local setBtn = createButton("Set Checkpoint", 45)
+local tpBtn = createButton("TP: OFF", 90)
 
--- Logic
+local desyncBtn = Instance.new("TextButton")
+desyncBtn.Size = UDim2.new(0,140,0,28)
+desyncBtn.Position = UDim2.new(0.5,-70,0,135)
+desyncBtn.Text = "Desync (Disabled)"
+desyncBtn.Font = Enum.Font.GothamBold
+desyncBtn.TextSize = 13
+desyncBtn.TextColor3 = Color3.new(1,1,1)
+desyncBtn.BackgroundColor3 = Color3.fromRGB(120,120,120)
+desyncBtn.BorderSizePixel = 0
+desyncBtn.Parent = frame
+Instance.new("UICorner", desyncBtn).CornerRadius = UDim.new(0,8)
+
+-- Button logic
 setBtn.MouseButton1Click:Connect(function()
 	local char = player.Character
 	if char and char:FindFirstChild("HumanoidRootPart") then
@@ -65,15 +83,15 @@ tpBtn.MouseButton1Click:Connect(function()
 	tpBtn.Text = tpEnabled and "TP: ON" or "TP: OFF"
 	tpBtn.BackgroundColor3 = tpEnabled
 		and Color3.fromRGB(0,170,255)
-		or Color3.fromRGB(60,60,60)
+		or Color3.fromRGB(70,70,70)
 end)
 
--- Prompt teleport (SAFE)
+-- SAFE prompt teleport
 ProximityPromptService.PromptButtonHoldEnded:Connect(function(prompt, who)
 	if who ~= player then return end
 	if not tpEnabled or not savedCFrame then return end
 
-	if prompt.ActionText == "Steal" or prompt.Name == "Steal" then
+	if prompt.Name == "Steal" or prompt.ActionText == "Steal" then
 		local char = player.Character
 		if char and char:FindFirstChild("HumanoidRootPart") then
 			char.HumanoidRootPart.CFrame = savedCFrame
@@ -84,23 +102,23 @@ end)
 -- Dragging
 local dragging, dragStart, startPos
 
-frame.InputBegan:Connect(function(i)
-	if i.UserInputType == Enum.UserInputType.MouseButton1 then
+frame.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
 		dragging = true
-		dragStart = i.Position
+		dragStart = input.Position
 		startPos = frame.Position
 	end
 end)
 
-frame.InputEnded:Connect(function(i)
-	if i.UserInputType == Enum.UserInputType.MouseButton1 then
+frame.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
 		dragging = false
 	end
 end)
 
-UserInputService.InputChanged:Connect(function(i)
-	if dragging and i.UserInputType == Enum.UserInputType.MouseMovement then
-		local delta = i.Position - dragStart
+UserInputService.InputChanged:Connect(function(input)
+	if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+		local delta = input.Position - dragStart
 		frame.Position = UDim2.new(
 			startPos.X.Scale,
 			startPos.X.Offset + delta.X,
