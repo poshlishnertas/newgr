@@ -3,6 +3,7 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
 
@@ -27,8 +28,47 @@ Instance.new("UICorner", frame).CornerRadius = UDim.new(0,14)
 -- 🔵 NEON BLUE BORDER
 local stroke = Instance.new("UIStroke")
 stroke.Thickness = 2
-stroke.Color = Color3.fromRGB(0, 170, 255) -- neon blue
+stroke.Color = Color3.fromRGB(0, 170, 255)
 stroke.Parent = frame
+
+-- 🖱️ DRAG SYSTEM
+local dragging = false
+local dragStart
+local startPos
+
+local function updateDrag(input)
+	local delta = input.Position - dragStart
+	frame.Position = UDim2.new(
+		startPos.X.Scale,
+		startPos.X.Offset + delta.X,
+		startPos.Y.Scale,
+		startPos.Y.Offset + delta.Y
+	)
+end
+
+frame.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1
+	or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		dragStart = input.Position
+		startPos = frame.Position
+
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+frame.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement
+	or input.UserInputType == Enum.UserInputType.Touch then
+		if dragging then
+			updateDrag(input)
+		end
+	end
+end)
 
 -- Title
 local title = Instance.new("TextLabel")
@@ -69,44 +109,41 @@ footer.Parent = frame
 -- Notification
 local notif = Instance.new("TextLabel")
 notif.Size = UDim2.fromOffset(320, 45)
-notif.Position = UDim2.new(1, 20, 1, -70) -- off screen
+notif.Position = UDim2.new(1, 20, 1, -70)
 notif.BackgroundColor3 = Color3.fromRGB(20,20,20)
 notif.TextColor3 = Color3.new(1,1,1)
 notif.Font = Enum.Font.GothamBold
 notif.TextSize = 14
-notif.TextTransparency = 0
-notif.BackgroundTransparency = 0
 notif.Visible = false
 notif.Parent = gui
 
 Instance.new("UICorner", notif).CornerRadius = UDim.new(0,10)
 
--- 🔔 Notification function (2 seconds)
+-- 🔔 Notification (2 sec)
 local function showNotification(text)
 	notif.Text = text
 	notif.Visible = true
 	notif.Position = UDim2.new(1, 20, 1, -70)
 
-	local inTween = TweenService:Create(
+	TweenService:Create(
 		notif,
-		TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+		TweenInfo.new(0.3),
 		{Position = UDim2.new(1, -340, 1, -70)}
-	)
-	inTween:Play()
+	):Play()
 
 	task.delay(2, function()
-		local outTween = TweenService:Create(
+		local out = TweenService:Create(
 			notif,
-			TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
+			TweenInfo.new(0.3),
 			{Position = UDim2.new(1, 20, 1, -70)}
 		)
-		outTween:Play()
-		outTween.Completed:Wait()
+		out:Play()
+		out.Completed:Wait()
 		notif.Visible = false
 	end)
 end
 
--- Fake lag (LOCAL ONLY)
+-- Fake lag
 local function startLag()
 	lagConnection = RunService.RenderStepped:Connect(function()
 		task.wait(0.15)
