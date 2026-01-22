@@ -1,0 +1,28 @@
+-- Services
+local Players = game:GetService("Players")
+
+print("=== Player Detector Started ===")
+
+-- Function to print player info
+local function detectPlayer(player)
+    print("Username:", player.Name)
+    print("Display Name:", player.DisplayName)
+    print("UserId:", player.UserId)
+    print("-------------------------")
+end
+
+-- Detect players already in the game
+for _, player in ipairs(Players:GetPlayers()) do
+    detectPlayer(player)
+end
+
+-- Detect players joining
+Players.PlayerAdded:Connect(function(player)
+    print("PLAYER JOINED")
+    detectPlayer(player)
+end)
+
+-- Detect players leaving
+Players.PlayerRemoving:Connect(function(player)
+    print("PLAYER LEFT:", player.Name)
+end)
