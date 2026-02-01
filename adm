@@ -1,0 +1,91 @@
+-- SERVICES
+local Players = game:GetService("Players")
+local StarterGui = game:GetService("StarterGui")
+local player = Players.LocalPlayer
+
+------------------------------------------------
+-- GUI SETUP
+------------------------------------------------
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "TradingSystemGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+-- Main Frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 350, 0, 200)
+mainFrame.Position = UDim2.new(0.5, -175, 0.5, -100)
+mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
+
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 40)
+title.BackgroundTransparency = 1
+title.Text = "The Trading System"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 20
+title.Parent = mainFrame
+
+------------------------------------------------
+-- BUTTONS
+------------------------------------------------
+
+-- Freeze Trade Button
+local freezeButton = Instance.new("TextButton")
+freezeButton.Size = UDim2.new(0.8, 0, 0, 40)
+freezeButton.Position = UDim2.new(0.1, 0, 0.35, 0)
+freezeButton.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+freezeButton.Text = "Freeze Trade"
+freezeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+freezeButton.Font = Enum.Font.GothamBold
+freezeButton.TextSize = 16
+freezeButton.Parent = mainFrame
+
+-- Auto Accept Trade Button
+local autoAcceptButton = Instance.new("TextButton")
+autoAcceptButton.Size = UDim2.new(0.8, 0, 0, 40)
+autoAcceptButton.Position = UDim2.new(0.1, 0, 0.6, 0)
+autoAcceptButton.BackgroundColor3 = Color3.fromRGB(60, 170, 100)
+autoAcceptButton.Text = "Auto Accept Trade"
+autoAcceptButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+autoAcceptButton.Font = Enum.Font.GothamBold
+autoAcceptButton.TextSize = 16
+autoAcceptButton.Parent = mainFrame
+
+------------------------------------------------
+-- BOTTOM CENTER TEXT
+------------------------------------------------
+
+local antiCheatText = Instance.new("TextLabel")
+antiCheatText.Size = UDim2.new(1, 0, 0, 30)
+antiCheatText.Position = UDim2.new(0, 0, 1, -30)
+antiCheatText.BackgroundTransparency = 1
+antiCheatText.Text = "Anti Cheat Activated"
+antiCheatText.TextColor3 = Color3.fromRGB(0, 255, 120)
+antiCheatText.Font = Enum.Font.GothamBold
+antiCheatText.TextSize = 14
+antiCheatText.Parent = mainFrame
+
+------------------------------------------------
+-- BUTTON FUNCTIONS
+------------------------------------------------
+
+freezeButton.MouseButton1Click:Connect(function()
+	StarterGui:SetCore("SendNotification", {
+		Title = "Trading System",
+		Text = "Trade has been Frozen!!!",
+		Duration = 3
+	})
+end)
+
+autoAcceptButton.MouseButton1Click:Connect(function()
+	StarterGui:SetCore("SendNotification", {
+		Title = "Trading System",
+		Text = "Auto Accept Trade Activated 🤙",
+		Duration = 3
+	})
+end)
