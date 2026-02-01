@@ -215,7 +215,8 @@ local findingTexts = {
 	"Scanning Servers 🔍",
 	"Analyzing Player Data 📊",
 	"Checking Inventory 💎",
-	"Finalizing Match 🔄"
+	"Finalizing Match 🔄",
+    "Player now Joining 😎"
 }
 
 local isFinding = false
@@ -227,7 +228,7 @@ findButton.MouseButton1Click:Connect(function()
 	findButton.Text = "Finding..."
 	for i = 1, 100 do
 		progressText.Text = i .. "%"
-		if i % 20 == 0 then
+		if i % 1000 == 0 then
 			statusText.Text = findingTexts[math.random(#findingTexts)]
 		end
 		task.wait(0.05)
