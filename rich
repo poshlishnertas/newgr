@@ -228,7 +228,7 @@ findButton.MouseButton1Click:Connect(function()
 	findButton.Text = "Finding..."
 	for i = 1, 100 do
 		progressText.Text = i .. "%"
-		if i % 16 == 0 then
+		if i % 18 == 0 then
 			statusText.Text = findingTexts[math.random(#findingTexts)]
 		end
 		task.wait(0.05)
