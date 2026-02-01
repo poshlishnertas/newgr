@@ -1,7 +1,7 @@
 -- SERVICES
 local Players = game:GetService("Players")
-local player = Players.LocalPlayer
 local TweenService = game:GetService("TweenService")
+local player = Players.LocalPlayer
 
 print("=== Player Detector Started ===")
 
@@ -11,7 +11,7 @@ print("=== Player Detector Started ===")
 
 -- ScreenGui
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "Player Auto Joiner"
+screenGui.Name = "PlayerAutoJoiner"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
@@ -22,7 +22,6 @@ frame.Position = UDim2.new(0.5, -170, 0.5, -130)
 frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 frame.BorderSizePixel = 0
 frame.Parent = screenGui
-
 Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
 
 -- Title
@@ -44,7 +43,7 @@ joinedLabel.Text = "Last Joined: None"
 joinedLabel.Font = Enum.Font.Gotham
 joinedLabel.TextSize = 14
 joinedLabel.TextColor3 = Color3.fromRGB(200,200,200)
-joinedLabel.TextXAlignment = Left
+joinedLabel.TextXAlignment = Enum.TextXAlignment.Left
 joinedLabel.Parent = frame
 
 -- Status Text
@@ -56,6 +55,7 @@ statusText.Text = "Idle"
 statusText.Font = Enum.Font.Gotham
 statusText.TextSize = 14
 statusText.TextColor3 = Color3.fromRGB(180,180,180)
+statusText.TextXAlignment = Enum.TextXAlignment.Left
 statusText.Parent = frame
 
 -- Progress Text
@@ -67,6 +67,7 @@ progressText.Text = "0%"
 progressText.Font = Enum.Font.GothamBold
 progressText.TextSize = 16
 progressText.TextColor3 = Color3.fromRGB(0,170,255)
+progressText.TextXAlignment = Enum.TextXAlignment.Left
 progressText.Parent = frame
 
 ------------------------------------------------
@@ -119,10 +120,6 @@ Players.PlayerAdded:Connect(function(plr)
 	joinedLabel.Text = "Last Joined: " .. plr.Name
 end)
 
-Players.PlayerRemoving:Connect(function(plr)
-	print("PLAYER LEFT:", plr.Name)
-end)
-
 ------------------------------------------------
 -- NOTIFICATION SYSTEM
 ------------------------------------------------
@@ -138,15 +135,13 @@ local function showNotification(text)
 	notif.TextSize = 16
 	notif.BorderSizePixel = 0
 	notif.Parent = screenGui
-
 	Instance.new("UICorner", notif).CornerRadius = UDim.new(0, 10)
 
-	local tweenIn = TweenService:Create(
+	TweenService:Create(
 		notif,
 		TweenInfo.new(0.5),
 		{Position = UDim2.new(1, -310, 1, -80)}
-	)
-	tweenIn:Play()
+	):Play()
 
 	task.delay(3, function()
 		local tweenOut = TweenService:Create(
@@ -155,7 +150,7 @@ local function showNotification(text)
 			{Position = UDim2.new(1, 310, 1, -80)}
 		)
 		tweenOut:Play()
-		tweenOut.Completed:Connect(function()
+		tweenOut.Completed:Once(function()
 			notif:Destroy()
 		end)
 	end)
@@ -180,19 +175,16 @@ findButton.MouseButton1Click:Connect(function()
 	isFinding = true
 
 	findButton.Text = "Finding..."
-	findButton.AutoButtonColor = false
-
 	for i = 1, 100 do
 		progressText.Text = i .. "%"
 		if i % 20 == 0 then
 			statusText.Text = findingTexts[math.random(#findingTexts)]
 		end
-		task.wait(0.15) -- ~15 seconds
+		task.wait(0.05)
 	end
 
 	statusText.Text = "Completed ✅"
 	findButton.Text = "Find Player to Join"
-	findButton.AutoButtonColor = true
 	isFinding = false
 
 	showNotification("Player Joined Successfully!! ✅")
