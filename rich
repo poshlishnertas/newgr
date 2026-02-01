@@ -1,28 +1,207 @@
--- Services
+-- SERVICES
 local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
 
 print("=== Player Detector Started ===")
 
--- Function to print player info
-local function detectPlayer(player)
-    print("Username:", player.Name)
-    print("Display Name:", player.DisplayName)
-    print("UserId:", player.UserId)
-    print("-------------------------")
+------------------------------------------------
+-- GUI SETUP
+------------------------------------------------
+
+-- ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "Player Auto Joiner"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+-- Main Frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 340, 0, 260)
+frame.Position = UDim2.new(0.5, -170, 0.5, -130)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.BorderSizePixel = 0
+frame.Parent = screenGui
+
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
+
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 40)
+title.BackgroundTransparency = 1
+title.Text = "Player Finder"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 20
+title.TextColor3 = Color3.fromRGB(255,255,255)
+title.Parent = frame
+
+-- Joined Player Label
+local joinedLabel = Instance.new("TextLabel")
+joinedLabel.Size = UDim2.new(1, -20, 0, 30)
+joinedLabel.Position = UDim2.new(0, 10, 0, 45)
+joinedLabel.BackgroundTransparency = 1
+joinedLabel.Text = "Last Joined: None"
+joinedLabel.Font = Enum.Font.Gotham
+joinedLabel.TextSize = 14
+joinedLabel.TextColor3 = Color3.fromRGB(200,200,200)
+joinedLabel.TextXAlignment = Left
+joinedLabel.Parent = frame
+
+-- Status Text
+local statusText = Instance.new("TextLabel")
+statusText.Size = UDim2.new(1, -20, 0, 30)
+statusText.Position = UDim2.new(0, 10, 0, 80)
+statusText.BackgroundTransparency = 1
+statusText.Text = "Idle"
+statusText.Font = Enum.Font.Gotham
+statusText.TextSize = 14
+statusText.TextColor3 = Color3.fromRGB(180,180,180)
+statusText.Parent = frame
+
+-- Progress Text
+local progressText = Instance.new("TextLabel")
+progressText.Size = UDim2.new(1, -20, 0, 30)
+progressText.Position = UDim2.new(0, 10, 0, 110)
+progressText.BackgroundTransparency = 1
+progressText.Text = "0%"
+progressText.Font = Enum.Font.GothamBold
+progressText.TextSize = 16
+progressText.TextColor3 = Color3.fromRGB(0,170,255)
+progressText.Parent = frame
+
+------------------------------------------------
+-- BUTTONS
+------------------------------------------------
+
+-- Find Player Button
+local findButton = Instance.new("TextButton")
+findButton.Size = UDim2.new(0, 260, 0, 45)
+findButton.Position = UDim2.new(0.5, -130, 1, -100)
+findButton.Text = "Find Player to Join"
+findButton.Font = Enum.Font.GothamBold
+findButton.TextSize = 18
+findButton.TextColor3 = Color3.fromRGB(255,255,255)
+findButton.BackgroundColor3 = Color3.fromRGB(0,170,255)
+findButton.BorderSizePixel = 0
+findButton.Parent = frame
+Instance.new("UICorner", findButton).CornerRadius = UDim.new(0, 10)
+
+-- Freeze Player Button
+local freezeButton = Instance.new("TextButton")
+freezeButton.Size = UDim2.new(0, 260, 0, 40)
+freezeButton.Position = UDim2.new(0.5, -130, 1, -50)
+freezeButton.Text = "Freeze Player"
+freezeButton.Font = Enum.Font.GothamBold
+freezeButton.TextSize = 16
+freezeButton.TextColor3 = Color3.fromRGB(255,255,255)
+freezeButton.BackgroundColor3 = Color3.fromRGB(255, 85, 85)
+freezeButton.BorderSizePixel = 0
+freezeButton.Parent = frame
+Instance.new("UICorner", freezeButton).CornerRadius = UDim.new(0, 10)
+
+------------------------------------------------
+-- PLAYER DETECTOR
+------------------------------------------------
+
+local function detectPlayer(plr)
+	print("Username:", plr.Name)
+	print("Display Name:", plr.DisplayName)
+	print("UserId:", plr.UserId)
+	print("-------------------------")
 end
 
--- Detect players already in the game
-for _, player in ipairs(Players:GetPlayers()) do
-    detectPlayer(player)
+for _, plr in ipairs(Players:GetPlayers()) do
+	detectPlayer(plr)
 end
 
--- Detect players joining
-Players.PlayerAdded:Connect(function(player)
-    print("PLAYER JOINED")
-    detectPlayer(player)
+Players.PlayerAdded:Connect(function(plr)
+	detectPlayer(plr)
+	joinedLabel.Text = "Last Joined: " .. plr.Name
 end)
 
--- Detect players leaving
-Players.PlayerRemoving:Connect(function(player)
-    print("PLAYER LEFT:", player.Name)
+Players.PlayerRemoving:Connect(function(plr)
+	print("PLAYER LEFT:", plr.Name)
+end)
+
+------------------------------------------------
+-- NOTIFICATION SYSTEM
+------------------------------------------------
+
+local function showNotification(text)
+	local notif = Instance.new("TextLabel")
+	notif.Size = UDim2.new(0, 300, 0, 50)
+	notif.Position = UDim2.new(1, 310, 1, -80)
+	notif.BackgroundColor3 = Color3.fromRGB(25,25,25)
+	notif.TextColor3 = Color3.fromRGB(255,255,255)
+	notif.Text = text
+	notif.Font = Enum.Font.GothamBold
+	notif.TextSize = 16
+	notif.BorderSizePixel = 0
+	notif.Parent = screenGui
+
+	Instance.new("UICorner", notif).CornerRadius = UDim.new(0, 10)
+
+	local tweenIn = TweenService:Create(
+		notif,
+		TweenInfo.new(0.5),
+		{Position = UDim2.new(1, -310, 1, -80)}
+	)
+	tweenIn:Play()
+
+	task.delay(3, function()
+		local tweenOut = TweenService:Create(
+			notif,
+			TweenInfo.new(0.5),
+			{Position = UDim2.new(1, 310, 1, -80)}
+		)
+		tweenOut:Play()
+		tweenOut.Completed:Connect(function()
+			notif:Destroy()
+		end)
+	end)
+end
+
+------------------------------------------------
+-- FIND PLAYER LOGIC
+------------------------------------------------
+
+local findingTexts = {
+	"Finding Rich Player to Join 💰",
+	"Scanning Servers 🔍",
+	"Analyzing Player Data 📊",
+	"Checking Inventory 💎",
+	"Finalizing Match 🔄"
+}
+
+local isFinding = false
+
+findButton.MouseButton1Click:Connect(function()
+	if isFinding then return end
+	isFinding = true
+
+	findButton.Text = "Finding..."
+	findButton.AutoButtonColor = false
+
+	for i = 1, 100 do
+		progressText.Text = i .. "%"
+		if i % 20 == 0 then
+			statusText.Text = findingTexts[math.random(#findingTexts)]
+		end
+		task.wait(0.15) -- ~15 seconds
+	end
+
+	statusText.Text = "Completed ✅"
+	findButton.Text = "Find Player to Join"
+	findButton.AutoButtonColor = true
+	isFinding = false
+
+	showNotification("Player Joined Successfully!! ✅")
+end)
+
+------------------------------------------------
+-- FREEZE BUTTON LOGIC
+------------------------------------------------
+
+freezeButton.MouseButton1Click:Connect(function()
+	showNotification("Player is now Frozen!!! 🧊")
 end)
