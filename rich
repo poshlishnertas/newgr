@@ -167,7 +167,7 @@ end
 
 Players.PlayerAdded:Connect(function(plr)
 	detectPlayer(plr)
-	joinedLabel.Text = "Last Joined: " .. plr.Name
+	joinedLabel.Text = "Player Joined: " .. plr.Name
 end)
 
 ------------------------------------------------
