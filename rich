@@ -11,7 +11,7 @@ print("=== Player Detector Started ===")
 
 -- ScreenGui
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "PlayerAutoJoiner"
+screenGui.Name = "Player Auto Joiner"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
