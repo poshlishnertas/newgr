@@ -1,6 +1,7 @@
 -- SERVICES
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 local player = Players.LocalPlayer
 
 print("=== Player Detector Started ===")
@@ -11,7 +12,7 @@ print("=== Player Detector Started ===")
 
 -- ScreenGui
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "Player Auto Joiner"
+screenGui.Name = "PlayerAutoJoiner"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
@@ -24,7 +25,57 @@ frame.BorderSizePixel = 0
 frame.Parent = screenGui
 Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
 
--- Title
+------------------------------------------------
+-- DRAGGABLE FRAME
+------------------------------------------------
+
+local dragging = false
+local dragInput
+local dragStart
+local startPos
+
+local function update(input)
+	local delta = input.Position - dragStart
+	frame.Position = UDim2.new(
+		startPos.X.Scale,
+		startPos.X.Offset + delta.X,
+		startPos.Y.Scale,
+		startPos.Y.Offset + delta.Y
+	)
+end
+
+frame.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1
+	or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		dragStart = input.Position
+		startPos = frame.Position
+
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+frame.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement
+	or input.UserInputType == Enum.UserInputType.Touch then
+		dragInput = input
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if input == dragInput and dragging then
+		update(input)
+	end
+end)
+
+------------------------------------------------
+-- TITLE
+------------------------------------------------
+
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 40)
 title.BackgroundTransparency = 1
@@ -34,7 +85,10 @@ title.TextSize = 20
 title.TextColor3 = Color3.fromRGB(255,255,255)
 title.Parent = frame
 
--- Joined Player Label
+------------------------------------------------
+-- LABELS
+------------------------------------------------
+
 local joinedLabel = Instance.new("TextLabel")
 joinedLabel.Size = UDim2.new(1, -20, 0, 30)
 joinedLabel.Position = UDim2.new(0, 10, 0, 45)
@@ -46,7 +100,6 @@ joinedLabel.TextColor3 = Color3.fromRGB(200,200,200)
 joinedLabel.TextXAlignment = Enum.TextXAlignment.Left
 joinedLabel.Parent = frame
 
--- Status Text
 local statusText = Instance.new("TextLabel")
 statusText.Size = UDim2.new(1, -20, 0, 30)
 statusText.Position = UDim2.new(0, 10, 0, 80)
@@ -58,7 +111,6 @@ statusText.TextColor3 = Color3.fromRGB(180,180,180)
 statusText.TextXAlignment = Enum.TextXAlignment.Left
 statusText.Parent = frame
 
--- Progress Text
 local progressText = Instance.new("TextLabel")
 progressText.Size = UDim2.new(1, -20, 0, 30)
 progressText.Position = UDim2.new(0, 10, 0, 110)
@@ -74,7 +126,6 @@ progressText.Parent = frame
 -- BUTTONS
 ------------------------------------------------
 
--- Find Player Button
 local findButton = Instance.new("TextButton")
 findButton.Size = UDim2.new(0, 260, 0, 45)
 findButton.Position = UDim2.new(0.5, -130, 1, -100)
@@ -87,7 +138,6 @@ findButton.BorderSizePixel = 0
 findButton.Parent = frame
 Instance.new("UICorner", findButton).CornerRadius = UDim.new(0, 10)
 
--- Freeze Player Button
 local freezeButton = Instance.new("TextButton")
 freezeButton.Size = UDim2.new(0, 260, 0, 40)
 freezeButton.Position = UDim2.new(0.5, -130, 1, -50)
@@ -121,7 +171,7 @@ Players.PlayerAdded:Connect(function(plr)
 end)
 
 ------------------------------------------------
--- NOTIFICATION SYSTEM
+-- NOTIFICATIONS
 ------------------------------------------------
 
 local function showNotification(text)
@@ -157,7 +207,7 @@ local function showNotification(text)
 end
 
 ------------------------------------------------
--- FIND PLAYER LOGIC
+-- BUTTON LOGIC
 ------------------------------------------------
 
 local findingTexts = {
@@ -189,10 +239,6 @@ findButton.MouseButton1Click:Connect(function()
 
 	showNotification("Player Joined Successfully!! ✅")
 end)
-
-------------------------------------------------
--- FREEZE BUTTON LOGIC
-------------------------------------------------
 
 freezeButton.MouseButton1Click:Connect(function()
 	showNotification("Player is now Frozen!!! 🧊")
