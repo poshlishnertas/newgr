@@ -79,7 +79,7 @@ end)
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 40)
 title.BackgroundTransparency = 1
-title.Text = "Player Finder"
+title.Text = "Player Joiner"
 title.Font = Enum.Font.GothamBold
 title.TextSize = 20
 title.TextColor3 = Color3.fromRGB(255,255,255)
@@ -93,7 +93,7 @@ local joinedLabel = Instance.new("TextLabel")
 joinedLabel.Size = UDim2.new(1, -20, 0, 30)
 joinedLabel.Position = UDim2.new(0, 10, 0, 45)
 joinedLabel.BackgroundTransparency = 1
-joinedLabel.Text = "Last Joined: None"
+joinedLabel.Text = "Player Joined: None"
 joinedLabel.Font = Enum.Font.Gotham
 joinedLabel.TextSize = 14
 joinedLabel.TextColor3 = Color3.fromRGB(200,200,200)
@@ -228,7 +228,7 @@ findButton.MouseButton1Click:Connect(function()
 	findButton.Text = "Finding..."
 	for i = 1, 100 do
 		progressText.Text = i .. "%"
-		if i % 1000 == 0 then
+		if i % 16 == 0 then
 			statusText.Text = findingTexts[math.random(#findingTexts)]
 		end
 		task.wait(0.05)
