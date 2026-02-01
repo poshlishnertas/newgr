@@ -216,7 +216,6 @@ local findingTexts = {
 	"Analyzing Player Data 📊",
 	"Checking Inventory 💎",
 	"Finalizing Match 🔄",
-    "Player now Joining 😎"
 }
 
 local isFinding = false
@@ -234,7 +233,7 @@ findButton.MouseButton1Click:Connect(function()
 		task.wait(0.05)
 	end
 
-	statusText.Text = "Completed ✅"
+	statusText.Text = "Player now Joining 😎"
 	findButton.Text = "Find Player to Join"
 	isFinding = false
 
