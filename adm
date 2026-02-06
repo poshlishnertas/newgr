@@ -2,6 +2,7 @@
 local Players = game:GetService("Players")
 local StarterGui = game:GetService("StarterGui")
 local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
 
 local player = Players.LocalPlayer
 
@@ -16,64 +17,103 @@ screenGui.Parent = player:WaitForChild("PlayerGui")
 
 -- Main Frame
 local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 350, 0, 200)
-mainFrame.Position = UDim2.new(0.5, -175, 0.5, -100)
-mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+mainFrame.Size = UDim2.new(0, 360, 0, 220)
+mainFrame.Position = UDim2.new(0.5, -180, 0.5, -110)
+mainFrame.BackgroundColor3 = Color3.fromRGB(18, 28, 40)
 mainFrame.BorderSizePixel = 0
-mainFrame.Active = true -- REQUIRED FOR DRAG
+mainFrame.Active = true
 mainFrame.Parent = screenGui
 
 -- Rounded corners
 local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 12)
+corner.CornerRadius = UDim.new(0, 16)
 corner.Parent = mainFrame
+
+-- Gradient (Snowy look)
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new{
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 50, 75)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 20, 35))
+}
+gradient.Rotation = 90
+gradient.Parent = mainFrame
+
+-- Glow effect
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(120, 200, 255)
+stroke.Thickness = 1.5
+stroke.Transparency = 0.4
+stroke.Parent = mainFrame
 
 ------------------------------------------------
 -- TITLE
 ------------------------------------------------
 
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 0, 40)
+title.Size = UDim2.new(1, 0, 0, 45)
 title.BackgroundTransparency = 1
-title.Text = "The Trading System"
-title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Text = "❄️ The Trading System"
+title.TextColor3 = Color3.fromRGB(230, 245, 255)
 title.Font = Enum.Font.GothamBold
 title.TextSize = 20
 title.Parent = mainFrame
 
 ------------------------------------------------
+-- BUTTON TEMPLATE FUNCTION
+------------------------------------------------
+
+local function createButton(text, posY, color)
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(0.85, 0, 0, 42)
+	btn.Position = UDim2.new(0.075, 0, posY, 0)
+	btn.BackgroundColor3 = color
+	btn.Text = text
+	btn.TextColor3 = Color3.fromRGB(240, 250, 255)
+	btn.Font = Enum.Font.GothamBold
+	btn.TextSize = 16
+	btn.AutoButtonColor = false
+	btn.Parent = mainFrame
+
+	local c = Instance.new("UICorner")
+	c.CornerRadius = UDim.new(0, 10)
+	c.Parent = btn
+
+	local s = Instance.new("UIStroke")
+	s.Color = Color3.fromRGB(200, 240, 255)
+	s.Transparency = 0.6
+	s.Parent = btn
+
+	-- Hover animation
+	btn.MouseEnter:Connect(function()
+		TweenService:Create(btn, TweenInfo.new(0.15), {
+			BackgroundColor3 = btn.BackgroundColor3:Lerp(Color3.fromRGB(255,255,255), 0.15)
+		}):Play()
+	end)
+
+	btn.MouseLeave:Connect(function()
+		TweenService:Create(btn, TweenInfo.new(0.15), {
+			BackgroundColor3 = color
+		}):Play()
+	end)
+
+	return btn
+end
+
+------------------------------------------------
 -- BUTTONS
 ------------------------------------------------
 
--- Freeze Trade Button
-local freezeButton = Instance.new("TextButton")
-freezeButton.Size = UDim2.new(0.8, 0, 0, 40)
-freezeButton.Position = UDim2.new(0.1, 0, 0.35, 0)
-freezeButton.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
-freezeButton.Text = "Freeze Trade"
-freezeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-freezeButton.Font = Enum.Font.GothamBold
-freezeButton.TextSize = 16
-freezeButton.Parent = mainFrame
+local freezeButton = createButton(
+	"Freeze Trade ❄️",
+	0.33,
+	Color3.fromRGB(90, 140, 200)
+)
 
-local freezeCorner = Instance.new("UICorner")
-freezeCorner.CornerRadius = UDim.new(0, 8)
-freezeCorner.Parent = freezeButton
-
--- Auto Accept Trade Button
-local autoAcceptButton = Instance.new("TextButton")
-autoAcceptButton.Size = UDim2.new(0.8, 0, 0, 40)
-autoAcceptButton.Position = UDim2.new(0.1, 0, 0.6, 0)
-autoAcceptButton.BackgroundColor3 = Color3.fromRGB(60, 170, 100)
-autoAcceptButton.Text = "Auto Accept Trade"
-autoAcceptButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-autoAcceptButton.Font = Enum.Font.GothamBold
-autoAcceptButton.TextSize = 16
-autoAcceptButton.Parent = mainFrame
-
-local acceptCorner = Instance.new("UICorner")
-acceptCorner.CornerRadius = UDim.new(0, 8)
-acceptCorner.Parent = autoAcceptButton
+local autoAcceptButton = createButton(
+	"Auto Accept Trade 🤙",
+	0.57,
+	Color3.fromRGB(80, 180, 150)
+)
 
 ------------------------------------------------
 -- BOTTOM TEXT
@@ -81,22 +121,22 @@ acceptCorner.Parent = autoAcceptButton
 
 local antiCheatText = Instance.new("TextLabel")
 antiCheatText.Size = UDim2.new(1, 0, 0, 30)
-antiCheatText.Position = UDim2.new(0, 0, 1, -30)
+antiCheatText.Position = UDim2.new(0, 0, 1, -32)
 antiCheatText.BackgroundTransparency = 1
-antiCheatText.Text = "Anti Cheat Activated"
-antiCheatText.TextColor3 = Color3.fromRGB(0, 255, 120)
+antiCheatText.Text = "🧊 Anti Cheat • Snow Protection Enabled"
+antiCheatText.TextColor3 = Color3.fromRGB(120, 220, 255)
 antiCheatText.Font = Enum.Font.GothamBold
-antiCheatText.TextSize = 14
+antiCheatText.TextSize = 13
 antiCheatText.Parent = mainFrame
 
 ------------------------------------------------
--- NOTIFICATIONS (SAFE)
+-- NOTIFICATIONS
 ------------------------------------------------
 
 local function notify(text)
 	pcall(function()
 		StarterGui:SetCore("SendNotification", {
-			Title = "Trading System",
+			Title = "❄️ Trading System",
 			Text = text,
 			Duration = 3
 		})
@@ -104,15 +144,15 @@ local function notify(text)
 end
 
 freezeButton.MouseButton1Click:Connect(function()
-	notify("Trade has been Frozen!!!")
+	notify("Trade has been Frozen!!! ❄️")
 end)
 
 autoAcceptButton.MouseButton1Click:Connect(function()
-	notify("Auto Accept Trade Activated 🤙")
+	notify("Auto Accept Trade Activated 🤙❄️")
 end)
 
 ------------------------------------------------
--- DRAG SYSTEM
+-- DRAG SYSTEM (SMOOTH)
 ------------------------------------------------
 
 local dragging = false
