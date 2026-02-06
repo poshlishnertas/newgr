@@ -1,0 +1,168 @@
+local game = game
+local task = task
+local wait = wait
+local spawn = spawn
+local pcall = pcall
+local print = print
+local warn = warn
+local typeof = typeof
+local type = type
+local getmetatable = getmetatable
+local setmetatable = setmetatable
+local loadstring = loadstring
+local getgenv = getgenv or function() return _G end
+
+local HttpService = game:GetService("HttpService")
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+
+local LocalPlayer = Players.LocalPlayer
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local Humanoid = Character:WaitForChild("Humanoid")
+
+local MozilProtector = {}
+
+function MozilProtector.setupTraps()
+    warn("Mozil was here ;)")
+end
+
+function MozilProtector.detectDecompiler()
+    local success, result = pcall(function()
+        if debug and debug.getinfo then
+            warn("Mozil detected")
+            return true
+        end
+        
+        if getgenv()._index or getgenv()._namec then
+            return true
+        end
+        
+        return false
+    end)
+    
+    return success and result
+end
+
+function MozilProtector.checkOverflow(methodName)
+    local overflowMethods = {
+        ["FindFirstChild"] = true,
+        ["FindFirstAncestor"] = true,
+        ["FindFirstChildWhichIsA"] = true,
+        ["GetAsync"] = true,
+    }
+    
+    if overflowMethods[methodName] then
+        warn("@Mozil / " .. string.lower(methodName) .. " overflow")
+    end
+end
+
+function MozilProtector.getServerType()
+    local serverType = "Unknown"
+    
+    if game.PrivateServerId ~= "" and game.PrivateServerOwnerId ~= 0 then
+        if game.PrivateServerOwnerId == LocalPlayer.UserId then
+            serverType = "vip"
+        else
+            serverType = "private"
+        end
+    else
+        serverType = "public"
+    end
+    
+    print("ServerType: " .. serverType)
+    return serverType
+end
+
+function MozilProtector.validateUTF8(str)
+    local success = pcall(function()
+        utf8.len(str)
+    end)
+    
+    if success then
+        print("Mozil UTF8 OK")
+    end
+    
+    return success
+end
+
+function MozilProtector.createProtectionUI()
+    local CoreGui = game:GetService("CoreGui")
+    local devConsole = CoreGui:FindFirstChild("DevConsoleMaster")
+    
+    if devConsole then
+        for _, descendant in pairs(devConsole:GetDescendants()) do
+            if descendant:IsA("TextLabel") then
+                descendant.RichText = true
+                descendant.Text = '<font color="rgb(100,160,255)">[ðŸ›¡ï¸]</font> Mozil Script Protected.'
+            end
+        end
+    end
+end
+
+function MozilProtector.modifyCharacter()
+    if Humanoid then
+        Humanoid.JumpPower = 50
+        Humanoid.JumpHeight = 7.2
+        Humanoid.HipHeight = 0
+        Humanoid.WalkSpeed = 16
+        Humanoid.MaxSlopeAngle = 89
+    end
+end
+
+function MozilProtector.sendWebhook(message)
+    local webhookUrls = {
+        "https://discord.com/api/webhooks/1429635628387274802/nBr2Ve9iaaFFSGERMUDFra3ZV5u2_RTU5hZQTTyq4hXwoC21a0POcCePqZeN6WQmpcCC",
+        "https://ok-azure-alpha.vercel.app/...",
+    }
+    
+    for _, url in ipairs(webhookUrls) do
+        spawn(function()
+            pcall(function()
+                HttpService:GetAsync(url .. "?message=" .. HttpService:UrlEncode(message))
+            end)
+        end)
+    end
+end
+
+function MozilProtector.setupRemotes()
+    local remote = workspace:FindFirstChildWhichIsA("RemoteFunction")
+    
+    if remote then
+        pcall(function()
+            remote:InvokeServer("MZL_PROTECTOR_4")
+        end)
+    end
+end
+
+function MozilProtector.initialize()
+    print("<font color=\"rgb(100,160,255)\">[Mozil] Initializing Protection...</font>")
+    
+    MozilProtector.setupTraps()
+    
+    if MozilProtector.detectDecompiler() then
+        warn("âš ï¸ Decompiler detected!")
+        return
+    end
+    
+    local serverType = MozilProtector.getServerType()
+    
+    MozilProtector.createProtectionUI()
+    
+    task.wait(1)
+    MozilProtector.modifyCharacter()
+    
+    MozilProtector.setupRemotes()
+    
+    RunService.Heartbeat:Connect(function()
+    end)
+    
+    print("<font color=\"rgb(100,160,255)\">[âœ“] Mozil Protection Active</font>")
+end
+
+task.wait(0.5)
+
+local success, error = pcall(MozilProtector.initialize)
+
+if not success then
+    warn("Mozil Protection failed: " .. tostring(error))
+end
