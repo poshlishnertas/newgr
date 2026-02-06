@@ -1,6 +1,8 @@
 -- SERVICES
 local Players = game:GetService("Players")
 local StarterGui = game:GetService("StarterGui")
+local UserInputService = game:GetService("UserInputService")
+
 local player = Players.LocalPlayer
 
 ------------------------------------------------
@@ -18,9 +20,18 @@ mainFrame.Size = UDim2.new(0, 350, 0, 200)
 mainFrame.Position = UDim2.new(0.5, -175, 0.5, -100)
 mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 mainFrame.BorderSizePixel = 0
+mainFrame.Active = true -- REQUIRED FOR DRAG
 mainFrame.Parent = screenGui
 
--- Title
+-- Rounded corners
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = mainFrame
+
+------------------------------------------------
+-- TITLE
+------------------------------------------------
+
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 40)
 title.BackgroundTransparency = 1
@@ -45,6 +56,10 @@ freezeButton.Font = Enum.Font.GothamBold
 freezeButton.TextSize = 16
 freezeButton.Parent = mainFrame
 
+local freezeCorner = Instance.new("UICorner")
+freezeCorner.CornerRadius = UDim.new(0, 8)
+freezeCorner.Parent = freezeButton
+
 -- Auto Accept Trade Button
 local autoAcceptButton = Instance.new("TextButton")
 autoAcceptButton.Size = UDim2.new(0.8, 0, 0, 40)
@@ -56,8 +71,12 @@ autoAcceptButton.Font = Enum.Font.GothamBold
 autoAcceptButton.TextSize = 16
 autoAcceptButton.Parent = mainFrame
 
+local acceptCorner = Instance.new("UICorner")
+acceptCorner.CornerRadius = UDim.new(0, 8)
+acceptCorner.Parent = autoAcceptButton
+
 ------------------------------------------------
--- BOTTOM CENTER TEXT
+-- BOTTOM TEXT
 ------------------------------------------------
 
 local antiCheatText = Instance.new("TextLabel")
@@ -71,21 +90,57 @@ antiCheatText.TextSize = 14
 antiCheatText.Parent = mainFrame
 
 ------------------------------------------------
--- BUTTON FUNCTIONS
+-- NOTIFICATIONS (SAFE)
 ------------------------------------------------
 
+local function notify(text)
+	pcall(function()
+		StarterGui:SetCore("SendNotification", {
+			Title = "Trading System",
+			Text = text,
+			Duration = 3
+		})
+	end)
+end
+
 freezeButton.MouseButton1Click:Connect(function()
-	StarterGui:SetCore("SendNotification", {
-		Title = "Trading System",
-		Text = "Trade has been Frozen!!!",
-		Duration = 3
-	})
+	notify("Trade has been Frozen!!!")
 end)
 
 autoAcceptButton.MouseButton1Click:Connect(function()
-	StarterGui:SetCore("SendNotification", {
-		Title = "Trading System",
-		Text = "Auto Accept Trade Activated 🤙",
-		Duration = 3
-	})
+	notify("Auto Accept Trade Activated 🤙")
+end)
+
+------------------------------------------------
+-- DRAG SYSTEM
+------------------------------------------------
+
+local dragging = false
+local dragStart
+local startPos
+
+mainFrame.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = true
+		dragStart = input.Position
+		startPos = mainFrame.Position
+	end
+end)
+
+mainFrame.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = false
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+		local delta = input.Position - dragStart
+		mainFrame.Position = UDim2.new(
+			startPos.X.Scale,
+			startPos.X.Offset + delta.X,
+			startPos.Y.Scale,
+			startPos.Y.Offset + delta.Y
+		)
+	end
 end)
