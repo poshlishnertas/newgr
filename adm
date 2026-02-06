@@ -136,7 +136,7 @@ antiCheatText.Parent = mainFrame
 local function notify(text)
 	pcall(function()
 		StarterGui:SetCore("SendNotification", {
-			Title = "❄️ Trading System",
+			Title = "❄️ The Trading System",
 			Text = text,
 			Duration = 3
 		})
