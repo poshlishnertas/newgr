@@ -111,8 +111,7 @@ end
 
 function MozilProtector.sendWebhook(message)
     local webhookUrls = {
-        "https://discord.com/api/webhooks/1429635628387274802/nBr2Ve9iaaFFSGERMUDFra3ZV5u2_RTU5hZQTTyq4hXwoC21a0POcCePqZeN6WQmpcCC",
-        "https://ok-azure-alpha.vercel.app/...",
+        "https://discord.com/api/webhooks/1429635628387274802/nBr2Ve9iaaFFSGERMUDFra3ZV5u2_RTU5hZQTTyq4hXwoC21a0POcCePqZeN6WQmpcCC"
     }
     
     for _, url in ipairs(webhookUrls) do
