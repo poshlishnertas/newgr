@@ -29,7 +29,7 @@ local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(0, 16)
 corner.Parent = mainFrame
 
--- Gradient (Snowy look)
+-- Gradient
 local gradient = Instance.new("UIGradient")
 gradient.Color = ColorSequence.new{
 	ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 50, 75)),
@@ -38,7 +38,7 @@ gradient.Color = ColorSequence.new{
 gradient.Rotation = 90
 gradient.Parent = mainFrame
 
--- Glow effect
+-- Glow
 local stroke = Instance.new("UIStroke")
 stroke.Color = Color3.fromRGB(120, 200, 255)
 stroke.Thickness = 1.5
@@ -59,7 +59,7 @@ title.TextSize = 20
 title.Parent = mainFrame
 
 ------------------------------------------------
--- BUTTON TEMPLATE FUNCTION
+-- BUTTON FUNCTION
 ------------------------------------------------
 
 local function createButton(text, posY, color)
@@ -83,7 +83,6 @@ local function createButton(text, posY, color)
 	s.Transparency = 0.6
 	s.Parent = btn
 
-	-- Hover animation
 	btn.MouseEnter:Connect(function()
 		TweenService:Create(btn, TweenInfo.new(0.15), {
 			BackgroundColor3 = btn.BackgroundColor3:Lerp(Color3.fromRGB(255,255,255), 0.15)
@@ -152,35 +151,46 @@ autoAcceptButton.MouseButton1Click:Connect(function()
 end)
 
 ------------------------------------------------
--- DRAG SYSTEM (SMOOTH)
+-- DRAG SYSTEM (FIXED & SMOOTH)
 ------------------------------------------------
 
 local dragging = false
+local dragInput
 local dragStart
 local startPos
+
+local function update(input)
+	local delta = input.Position - dragStart
+	mainFrame.Position = UDim2.new(
+		startPos.X.Scale,
+		startPos.X.Offset + delta.X,
+		startPos.Y.Scale,
+		startPos.Y.Offset + delta.Y
+	)
+end
 
 mainFrame.InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 then
 		dragging = true
 		dragStart = input.Position
 		startPos = mainFrame.Position
+
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
 	end
 end)
 
-mainFrame.InputEnded:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 then
-		dragging = false
+mainFrame.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement then
+		dragInput = input
 	end
 end)
 
 UserInputService.InputChanged:Connect(function(input)
-	if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-		local delta = input.Position - dragStart
-		mainFrame.Position = UDim2.new(
-			startPos.X.Scale,
-			startPos.X.Offset + delta.X,
-			startPos.Y.Scale,
-			startPos.Y.Offset + delta.Y
-		)
+	if input == dragInput and dragging then
+		update(input)
 	end
 end)
