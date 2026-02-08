@@ -7,21 +7,39 @@ local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
 
 ------------------------------------------------
--- GUI SETUP
+-- GUI SETUP (FIXED)
 ------------------------------------------------
 
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "TradingSystemGui"
 screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+screenGui.DisplayOrder = 999999 -- 🔥 SUPER HIGH (ABOVE TRADE)
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
--- Main Frame
+------------------------------------------------
+-- CLICK BLOCKER (BLOCKS TRADE CLICKS)
+------------------------------------------------
+
+local blocker = Instance.new("Frame")
+blocker.Size = UDim2.new(1, 0, 1, 0)
+blocker.BackgroundTransparency = 1 -- invisible
+blocker.ZIndex = 999998
+blocker.Parent = screenGui
+blocker.Active = true -- eats clicks
+
+------------------------------------------------
+-- MAIN FRAME
+------------------------------------------------
+
 local mainFrame = Instance.new("Frame")
 mainFrame.Size = UDim2.new(0, 360, 0, 220)
 mainFrame.Position = UDim2.new(0.5, -180, 0.5, -110)
 mainFrame.BackgroundColor3 = Color3.fromRGB(18, 28, 40)
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
+mainFrame.ZIndex = 999999
 mainFrame.Parent = screenGui
 
 -- Rounded corners
@@ -56,6 +74,7 @@ title.Text = "❄️ Trade Scam ❄️"
 title.TextColor3 = Color3.fromRGB(230, 245, 255)
 title.Font = Enum.Font.GothamBold
 title.TextSize = 20
+title.ZIndex = 999999
 title.Parent = mainFrame
 
 ------------------------------------------------
@@ -72,6 +91,7 @@ local function createButton(text, posY, color)
 	btn.Font = Enum.Font.GothamBold
 	btn.TextSize = 16
 	btn.AutoButtonColor = false
+	btn.ZIndex = 999999
 	btn.Parent = mainFrame
 
 	local c = Instance.new("UICorner")
@@ -117,6 +137,7 @@ antiCheatText.Text = "🧊 Anti Cheat Protection Enabled"
 antiCheatText.TextColor3 = Color3.fromRGB(120, 220, 255)
 antiCheatText.Font = Enum.Font.GothamBold
 antiCheatText.TextSize = 13
+antiCheatText.ZIndex = 999999
 antiCheatText.Parent = mainFrame
 
 ------------------------------------------------
@@ -142,7 +163,7 @@ autoAcceptButton.MouseButton1Click:Connect(function()
 end)
 
 ------------------------------------------------
--- ✅ DRAG SYSTEM (WORKING & SMOOTH)
+-- DRAG SYSTEM
 ------------------------------------------------
 
 local dragging = false
