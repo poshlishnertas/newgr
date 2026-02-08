@@ -1,0 +1,196 @@
+-- SERVICES
+local Players = game:GetService("Players")
+local StarterGui = game:GetService("StarterGui")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+
+local player = Players.LocalPlayer
+
+------------------------------------------------
+-- GUI SETUP
+------------------------------------------------
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "TradingSystemGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+-- Main Frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 360, 0, 220)
+mainFrame.Position = UDim2.new(0.5, -180, 0.5, -110)
+mainFrame.BackgroundColor3 = Color3.fromRGB(18, 28, 40)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Parent = screenGui
+
+-- Rounded corners
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 16)
+corner.Parent = mainFrame
+
+-- Gradient
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new{
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 50, 75)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 20, 35))
+}
+gradient.Rotation = 90
+gradient.Parent = mainFrame
+
+-- Glow
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(120, 200, 255)
+stroke.Thickness = 1.5
+stroke.Transparency = 0.4
+stroke.Parent = mainFrame
+
+------------------------------------------------
+-- TITLE
+------------------------------------------------
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 45)
+title.BackgroundTransparency = 1
+title.Text = "❄️ The Trading System"
+title.TextColor3 = Color3.fromRGB(230, 245, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 20
+title.Parent = mainFrame
+
+------------------------------------------------
+-- BUTTON FUNCTION
+------------------------------------------------
+
+local function createButton(text, posY, color)
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(0.85, 0, 0, 42)
+	btn.Position = UDim2.new(0.075, 0, posY, 0)
+	btn.BackgroundColor3 = color
+	btn.Text = text
+	btn.TextColor3 = Color3.fromRGB(240, 250, 255)
+	btn.Font = Enum.Font.GothamBold
+	btn.TextSize = 16
+	btn.AutoButtonColor = false
+	btn.Parent = mainFrame
+
+	local c = Instance.new("UICorner")
+	c.CornerRadius = UDim.new(0, 10)
+	c.Parent = btn
+
+	local s = Instance.new("UIStroke")
+	s.Color = Color3.fromRGB(200, 240, 255)
+	s.Transparency = 0.6
+	s.Parent = btn
+
+	btn.MouseEnter:Connect(function()
+		TweenService:Create(btn, TweenInfo.new(0.15), {
+			BackgroundColor3 = btn.BackgroundColor3:Lerp(Color3.fromRGB(255,255,255), 0.15)
+		}):Play()
+	end)
+
+	btn.MouseLeave:Connect(function()
+		TweenService:Create(btn, TweenInfo.new(0.15), {
+			BackgroundColor3 = color
+		}):Play()
+	end)
+
+	return btn
+end
+
+------------------------------------------------
+-- BUTTONS
+------------------------------------------------
+
+local freezeButton = createButton(
+	"Freeze Trade ❄️",
+	0.33,
+	Color3.fromRGB(90, 140, 200)
+)
+
+local autoAcceptButton = createButton(
+	"Auto Accept Trade 🤙",
+	0.57,
+	Color3.fromRGB(80, 180, 150)
+)
+
+------------------------------------------------
+-- BOTTOM TEXT
+------------------------------------------------
+
+local antiCheatText = Instance.new("TextLabel")
+antiCheatText.Size = UDim2.new(1, 0, 0, 30)
+antiCheatText.Position = UDim2.new(0, 0, 1, -32)
+antiCheatText.BackgroundTransparency = 1
+antiCheatText.Text = "🧊 Anti Cheat • Snow Protection Enabled"
+antiCheatText.TextColor3 = Color3.fromRGB(120, 220, 255)
+antiCheatText.Font = Enum.Font.GothamBold
+antiCheatText.TextSize = 13
+antiCheatText.Parent = mainFrame
+
+------------------------------------------------
+-- NOTIFICATIONS
+------------------------------------------------
+
+local function notify(text)
+	pcall(function()
+		StarterGui:SetCore("SendNotification", {
+			Title = "❄️ The Trading System",
+			Text = text,
+			Duration = 3
+		})
+	end)
+end
+
+freezeButton.MouseButton1Click:Connect(function()
+	notify("Trade has been Frozen!!! ❄️")
+end)
+
+autoAcceptButton.MouseButton1Click:Connect(function()
+	notify("Auto Accept Trade Activated 🤙❄️")
+end)
+
+------------------------------------------------
+-- DRAG SYSTEM (FIXED & SMOOTH)
+------------------------------------------------
+
+local dragging = false
+local dragInput
+local dragStart
+local startPos
+
+local function update(input)
+	local delta = input.Position - dragStart
+	mainFrame.Position = UDim2.new(
+		startPos.X.Scale,
+		startPos.X.Offset + delta.X,
+		startPos.Y.Scale,
+		startPos.Y.Offset + delta.Y
+	)
+end
+
+mainFrame.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = true
+		dragStart = input.Position
+		startPos = mainFrame.Position
+
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+mainFrame.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement then
+		dragInput = input
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if input == dragInput and dragging then
+		update(input)
+	end
+end)
