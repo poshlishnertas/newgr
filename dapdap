@@ -102,17 +102,8 @@ end
 -- BUTTONS
 ------------------------------------------------
 
-local freezeButton = createButton(
-	"Freeze Trade ❄️",
-	0.33,
-	Color3.fromRGB(90, 140, 200)
-)
-
-local autoAcceptButton = createButton(
-	"Auto Accept Trade 🤙",
-	0.57,
-	Color3.fromRGB(80, 180, 150)
-)
+local freezeButton = createButton("Freeze Trade ❄️", 0.33, Color3.fromRGB(90, 140, 200))
+local autoAcceptButton = createButton("Auto Accept Trade 🤙", 0.57, Color3.fromRGB(80, 180, 150))
 
 ------------------------------------------------
 -- BOTTOM TEXT
@@ -151,11 +142,10 @@ autoAcceptButton.MouseButton1Click:Connect(function()
 end)
 
 ------------------------------------------------
--- DRAG SYSTEM (FIXED & SMOOTH)
+-- ✅ DRAG SYSTEM (WORKING & SMOOTH)
 ------------------------------------------------
 
 local dragging = false
-local dragInput
 local dragStart
 local startPos
 
@@ -170,7 +160,9 @@ local function update(input)
 end
 
 mainFrame.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+	if input.UserInputType == Enum.UserInputType.MouseButton1
+	or input.UserInputType == Enum.UserInputType.Touch then
+		
 		dragging = true
 		dragStart = input.Position
 		startPos = mainFrame.Position
@@ -183,14 +175,11 @@ mainFrame.InputBegan:Connect(function(input)
 	end
 end)
 
-mainFrame.InputChanged:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseMovement then
-		dragInput = input
-	end
-end)
-
 UserInputService.InputChanged:Connect(function(input)
-	if input == dragInput and dragging then
+	if dragging and (
+		input.UserInputType == Enum.UserInputType.MouseMovement
+		or input.UserInputType == Enum.UserInputType.Touch
+	) then
 		update(input)
 	end
 end)
