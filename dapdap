@@ -7,7 +7,7 @@ local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
 
 ------------------------------------------------
--- GUI SETUP (FIXED)
+-- GUI SETUP (ALWAYS ON TOP, NO BLOCK)
 ------------------------------------------------
 
 local screenGui = Instance.new("ScreenGui")
@@ -15,19 +15,8 @@ screenGui.Name = "TradingSystemGui"
 screenGui.ResetOnSpawn = false
 screenGui.IgnoreGuiInset = true
 screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-screenGui.DisplayOrder = 999999 -- 🔥 SUPER HIGH (ABOVE TRADE)
+screenGui.DisplayOrder = 999999 -- stays above trade
 screenGui.Parent = player:WaitForChild("PlayerGui")
-
-------------------------------------------------
--- CLICK BLOCKER (BLOCKS TRADE CLICKS)
-------------------------------------------------
-
-local blocker = Instance.new("Frame")
-blocker.Size = UDim2.new(1, 0, 1, 0)
-blocker.BackgroundTransparency = 1 -- invisible
-blocker.ZIndex = 999998
-blocker.Parent = screenGui
-blocker.Active = true -- eats clicks
 
 ------------------------------------------------
 -- MAIN FRAME
