@@ -1,0 +1,159 @@
+-- ⚡ DARK HACKER DUPLICATOR GUI (VISUAL VERSION) ⚡
+
+local Players = game:GetService("Players")
+local PlayerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local mouse = player:GetMouse()
+
+local PetsFolder = ReplicatedStorage:WaitForChild("Pets")
+local selectedPetName = "YourPetModelName" -- 🔥 CHANGE THIS
+
+-- Create GUI
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "Duplicator"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = PlayerGui
+
+-- Main Frame
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0, 250, 0, 190)
+Frame.Position = UDim2.new(0.1, 0, 0.1, 0)
+Frame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+Frame.BorderSizePixel = 0
+Frame.Active = true
+Frame.Parent = ScreenGui
+
+Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 10)
+
+local Stroke = Instance.new("UIStroke", Frame)
+Stroke.Color = Color3.fromRGB(0, 255, 0)
+Stroke.Thickness = 2
+
+-- Header
+local Header = Instance.new("TextLabel")
+Header.Size = UDim2.new(1, 0, 0, 35)
+Header.BackgroundColor3 = Color3.fromRGB(0, 20, 0)
+Header.Text = "☠ DUPLICATOR ☠"
+Header.Font = Enum.Font.Code
+Header.TextSize = 18
+Header.TextColor3 = Color3.fromRGB(0, 255, 0)
+Header.Parent = Frame
+
+Instance.new("UICorner", Header).CornerRadius = UDim.new(0, 10)
+
+-- Close Button
+local Close = Instance.new("TextButton")
+Close.Size = UDim2.new(0, 25, 0, 25)
+Close.Position = UDim2.new(1, -30, 0, 5)
+Close.BackgroundTransparency = 1
+Close.Text = "X"
+Close.TextColor3 = Color3.fromRGB(255, 0, 0)
+Close.Font = Enum.Font.Code
+Close.TextSize = 18
+Close.Parent = Header
+
+-- Duplicate Button
+local DupBtn = Instance.new("TextButton")
+DupBtn.Size = UDim2.new(0.8, 0, 0, 50)
+DupBtn.Position = UDim2.new(0.1, 0, 0.35, 0)
+DupBtn.BackgroundColor3 = Color3.fromRGB(0, 40, 0)
+DupBtn.Text = "⚡ PLACE PET ⚡"
+DupBtn.TextColor3 = Color3.fromRGB(0, 255, 0)
+DupBtn.Font = Enum.Font.Code
+DupBtn.TextSize = 16
+DupBtn.Parent = Frame
+
+Instance.new("UICorner", DupBtn).CornerRadius = UDim.new(0, 6)
+
+-- Status
+local Status = Instance.new("TextLabel")
+Status.Size = UDim2.new(0.9, 0, 0, 45)
+Status.Position = UDim2.new(0.05, 0, 0.7, 0)
+Status.BackgroundTransparency = 1
+Status.Text = "System Idle..."
+Status.Font = Enum.Font.Code
+Status.TextSize = 14
+Status.TextColor3 = Color3.fromRGB(0, 255, 0)
+Status.TextWrapped = true
+Status.Parent = Frame
+
+-- ========================
+-- VISUAL PLACEMENT SYSTEM
+-- ========================
+
+local placing = false
+local previewPet = nil
+
+local function createPreview(petName)
+	local original = PetsFolder:FindFirstChild(petName)
+	if not original then
+		Status.Text = "[ERROR] Pet not found!"
+		return
+	end
+	
+	local clone = original:Clone()
+	
+	for _, part in pairs(clone:GetDescendants()) do
+		if part:IsA("BasePart") then
+			part.Transparency = 0.5
+			part.CanCollide = false
+			part.Color = Color3.fromRGB(0,255,0)
+		end
+	end
+	
+	clone.Parent = workspace
+	return clone
+end
+
+local function updatePreview()
+	if previewPet and previewPet.PrimaryPart then
+		local hit = mouse.Hit
+		previewPet:SetPrimaryPartCFrame(
+			CFrame.new(hit.Position.X, hit.Position.Y, hit.Position.Z)
+		)
+	end
+end
+
+DupBtn.MouseButton1Click:Connect(function()
+	if placing then return end
+	
+	Status.Text = "[SYSTEM] Click to place pet"
+	previewPet = createPreview(selectedPetName)
+	
+	if previewPet then
+		placing = true
+	end
+end)
+
+RunService.RenderStepped:Connect(function()
+	if placing then
+		updatePreview()
+	end
+end)
+
+mouse.Button1Down:Connect(function()
+	if placing and previewPet then
+		
+		for _, part in pairs(previewPet:GetDescendants()) do
+			if part:IsA("BasePart") then
+				part.Transparency = 0
+				part.CanCollide = true
+			end
+		end
+		
+		Status.Text = "[SUCCESS] Pet Placed!"
+		placing = false
+		previewPet = nil
+	end
+end)
+
+Close.MouseButton1Click:Connect(function()
+	ScreenGui:Destroy()
+end)
+
+print("☠ Visual Pet Placement Loaded ☠")
